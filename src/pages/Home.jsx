@@ -12,13 +12,14 @@ import OpportunityBoard from '../components/OpportunityBoard';
 import TILCorner from '../components/TILCorner';
 import GoogleCalendar from '../components/GoogleCalender';
 import GoogleMeet from '../components/GoogleMeet';
+import Notes from '../components/Notes';
 
 
 const Home = () => {
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
             <h1 className="text-4xl font-bold mb-6">Digital Notice Board</h1>
-            <div className="w-full max-w-8xl grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="w-full max-w-8xl    grid grid-cols-1 md:grid-cols-4 gap-6">
                 <GoogleSlides />
                 <PomodoroTimer />
                 <GoogleSpreadsheet />
@@ -32,6 +33,7 @@ const Home = () => {
                 <TILCorner />
                 <GoogleCalendar />
                 <GoogleMeet />
+                <Notes />
             </div>
         </div>
     );
