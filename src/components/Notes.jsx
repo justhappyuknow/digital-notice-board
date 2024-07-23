@@ -1,4 +1,4 @@
-// src/components/Notes.js
+// src/components/No.js
 import React, { useState } from 'react';
 
 const Notes = () => {
