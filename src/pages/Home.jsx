@@ -12,6 +12,7 @@ import OpportunityBoard from '../components/OpportunityBoard';
 import TILCorner from '../components/TILCorner';
 import GoogleCalendar from '../components/GoogleCalender';
 import GoogleMeet from '../components/GoogleMeet';
+import Notes from '../components/Notes';
 
 
 const Home = () => {
@@ -32,6 +33,7 @@ const Home = () => {
                 <TILCorner />
                 <GoogleCalendar />
                 <GoogleMeet />
+                <Notes />
             </div>
         </div>
     );

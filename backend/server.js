@@ -6,8 +6,6 @@ const issueRoutes = require('./routes/issueRoutes');
 const pollRoutes = require('./routes/pollRoutes');
 const calendarRoutes = require('./routes/calendarRoutes');
 
-
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
