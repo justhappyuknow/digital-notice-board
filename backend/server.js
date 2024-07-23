@@ -4,7 +4,9 @@ const cors = require('cors');
 const { Server } = require('socket.io');
 const issueRoutes = require('./routes/issueRoutes');
 const pollRoutes = require('./routes/pollRoutes');
-const meetingRoutes  = require('./routes/meetingRoutes')
+const calendarRoutes = require('./routes/calendarRoutes');
+
+
 
 const app = express();
 const server = http.createServer(app);
@@ -32,7 +34,7 @@ app.use(express.json()); // for parsing application/json
 // Set up routes
 app.use('/api/issues', issueRoutes);
 app.use('/api/polls', pollRoutes);
-app.use('/api/meetings', meetingRoutes);
+app.use('/calendar', calendarRoutes);
 
 io.on('connection', (socket) => {
   console.log('a user connected');

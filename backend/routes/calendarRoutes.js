@@ -1,7 +1,8 @@
 const express = require('express');
-const calendarController = require('./controllers/calendarController');
 const router = express.Router();
+const calendarController = require('../controllers/calendarController');
 
-router.get('/api/upcoming-meetings', calendarController.getUpcomingMeetings);
+// Route to list events
+router.get('/events', calendarController.listEvents);
 
 module.exports = router;

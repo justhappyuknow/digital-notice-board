@@ -1,76 +1,43 @@
+// controllers/meetingsController.js
 const { google } = require('googleapis');
-const path = require('path');
+const credentials = require('../credentials/googleCredentials.json');
 
-// Load the service account credentials
-const KEYFILEPATH = path.join(__dirname, '../credentials/gmeet.json');
-const SCOPES = ['https://www.googleapis.com/auth/calendar']; // Adjust scopes as necessary
+const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+const calendar = google.calendar('v3');
 
-// Create a JWT client
-const auth = new google.auth.GoogleAuth({
-  keyFile: KEYFILEPATH,
-  scopes: SCOPES,
-});
-
-const calendar = google.calendar({ version: 'v3', auth });
-
-const createMeeting = async (req, res) => {
-  const { summary, startTime, endTime } = req.body;
-
-  const event = {
-    summary: summary || 'Google Meet Meeting',
-    start: {
-      dateTime: startTime,
-      timeZone: 'America/Los_Angeles', // Adjust as necessary
-    },
-    end: {
-      dateTime: endTime,
-      timeZone: 'America/Los_Angeles', // Adjust as necessary
-    },
-    conferenceData: {
-      createRequest: {
-        requestId: 'some-random-string', // Generate a unique request ID
-        conferenceSolutionKey: {
-          type: 'hangoutsMeet',
-        },
-      },
-    },
-  };
-
-  try {
-    const response = await calendar.events.insert({
-      calendarId: 'primary',
-      resource: event,
-      conferenceDataVersion: 1,
+const getAuthClient = () => {
+    const { client_id, client_secret, redirect_uris } = credentials.installed;
+    const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
+    oAuth2Client.setCredentials({
+        refresh_token: 'YOUR_REFRESH_TOKEN', // Ensure you have a valid refresh token
     });
-
-    res.status(201).json({
-      meetingLink: response.data.hangoutLink,
-      meetingId: response.data.id,
-      startTime: response.data.start.dateTime,
-    });
-  } catch (error) {
-    console.error('Error creating meeting:', error);
-    res.status(500).json({ error: error.message });
-  }
+    return oAuth2Client;
 };
 
-const getMeetingDetails = async (req, res) => {
-  const { meetingId } = req.params;
+const listMeetings = async (req, res) => {
+    try {
+        const auth = getAuthClient();
+        const response = await calendar.events.list({
+            auth,
+            calendarId: 'primary', // or the calendar ID you are targeting
+            timeMin: new Date().toISOString(),
+            maxResults: 10,
+            singleEvents: true,
+            orderBy: 'startTime',
+        });
 
-  try {
-    const response = await calendar.events.get({
-      calendarId: 'primary',
-      eventId: meetingId,
-    });
+        const events = response.data.items.map(event => ({
+            id: event.id,
+            summary: event.summary,
+            start: event.start.dateTime,
+            joinLink: event.hangoutLink,
+        }));
 
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error('Error fetching meeting details:', error);
-    res.status(500).json({ error: error.message });
-  }
+        res.status(200).json(events);
+    } catch (error) {
+        console.error('Error fetching meetings:', error);
+        res.status(500).send('Error fetching meetings');
+    }
 };
 
-module.exports = {
-  createMeeting,
-  getMeetingDetails,
-};
+module.exports = { listMeetings };
