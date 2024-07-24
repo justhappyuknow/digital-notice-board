@@ -25,6 +25,6 @@ dist-ssr
 backend/credentials/calendar.json
 backend/credentials/gmeet.json
 backend/credentials/sheets.json
-backend/credentials/token.json          
-backend/credentials/keep.json          
+backend/credentials/keep.json
+backend/credentials/token.json
 todo.txt
