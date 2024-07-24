@@ -6,12 +6,12 @@ import StarsCanvas from './components/StarsCanvas';
 const App = () => {
   return (
     <div className="relative min-h-screen flex flex-col items-center p-4">
-    <StarsCanvas />
-    <div className="relative z-10 w-full max-w-8xl">
-      <Home />
-      <Music />
-    
-    </div>
+      <StarsCanvas />
+      <div className="relative z-10 w-full max-w-8xl">
+        <Home />
+        <Music />
+
+      </div>
     </div>
   );
 };

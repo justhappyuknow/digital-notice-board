@@ -36,7 +36,7 @@ const StepsTracker = ({ onClose }) => {
                     <FaTimes className="text-white" />
                 </button>
                 <img
-                    src="../public/step-tracker.png" // Path to your Steps Tracker logo
+                    src="../step-tracker.png" // Path to your Steps Tracker logo
                     alt="Steps Tracker"
                     className="absolute top-4 right-9 w-12 h-12"
                 />

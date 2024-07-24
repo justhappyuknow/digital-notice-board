@@ -8,17 +8,17 @@ const GoogleMeet = ({ onClose }) => {
     useEffect(() => {
         const fetchMeetings = async () => {
             try {
-                const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events'); // Replace with your actual API endpoint
+                const response = await fetch('http://localhost:4000/calendar/events'); // Ensure this matches your server route
                 const data = await response.json();
-                if (Array.isArray(data.items)) {
-                    setMeetings(data.items);
+                if (Array.isArray(data)) {
+                    setMeetings(data);
                 } else {
                     console.error('Expected an array, but got:', data);
-                    setMeetings([]); // Set to an empty array or handle as needed
+                    setMeetings([]); // Handle as needed
                 }
             } catch (error) {
                 console.error('Error fetching meetings:', error);
-                setMeetings([]); // Set to an empty array or handle as needed
+                setMeetings([]); // Handle as needed
             }
         };
 
@@ -42,7 +42,15 @@ const GoogleMeet = ({ onClose }) => {
                         meetings.map((meeting, index) => (
                             <li key={index} className="p-4 border border-gray-200 rounded-lg shadow-sm mb-4 bg-white bg-opacity-60">
                                 <h3 className="text-lg font-semibold">{meeting.summary}</h3>
-                                <p className="text-gray-700 mt-2">{meeting.startTime} - {meeting.endTime}</p>
+                                <p className="text-gray-700 mt-2">
+                                    {meeting.start.dateTime ? new Date(meeting.start.dateTime).toLocaleString() : new Date(meeting.start.date).toLocaleDateString()} -
+                                    {meeting.end.dateTime ? new Date(meeting.end.dateTime).toLocaleString() : new Date(meeting.end.date).toLocaleDateString()}
+                                </p>
+                                {meeting.hangoutLink && (
+                                    <a href={meeting.hangoutLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                                        Join Meeting
+                                    </a>
+                                )}
                             </li>
                         ))
                     ) : (
