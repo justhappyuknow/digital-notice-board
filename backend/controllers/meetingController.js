@@ -1,38 +1,42 @@
-// controllers/meetingsController.js
 const { google } = require('googleapis');
-const credentials = require('../credentials/calender.json');
+const credentials = require('../credentials/calendar.json');
+const fs = require('fs');
+const path = require('path');
 
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
-const calendar = google.calendar('v3');
+const TOKEN_PATH = path.join(__dirname, '../credentials/token.json');
 
 const getAuthClient = () => {
-    const { client_id, client_secret, redirect_uris } = credentials.installed;
+    const { client_id, client_secret, redirect_uris } = credentials.web;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-    oAuth2Client.setCredentials({
-        refresh_token: '1//0gHMFQaDwK8F3CgYIARAAGBASNwF-L9IrkX2hHiwTku2cvfZ5dsFzjwqSEO6XIW3CHv4Xhqr8i9HIL1PCC7lkDNA_s3Fsi0XBMMk', // Ensure you have a valid refresh token
-    });
+
+    // Load the token from file
+    const token = JSON.parse(fs.readFileSync(TOKEN_PATH));
+    oAuth2Client.setCredentials(token);
+
     return oAuth2Client;
 };
 
 const listMeetings = async (req, res) => {
     try {
         const auth = getAuthClient();
+        const calendar = google.calendar({ version: 'v3', auth });
+
         const response = await calendar.events.list({
-            auth,
-            calendarId: 'primary', // or the calendar ID you are targeting
+            calendarId: 'primary', // Use 'primary' for the authenticated user's primary calendar
             timeMin: new Date().toISOString(),
             maxResults: 10,
             singleEvents: true,
             orderBy: 'startTime',
         });
-        console.log('Fetched events:', events); 
+
         const events = response.data.items.map(event => ({
             id: event.id,
             summary: event.summary,
-            start: event.start.dateTime,
-            joinLink: event.hangoutLink,
+            start: event.start.dateTime || event.start.date, // Handle both date and dateTime formats
+            end: event.end.dateTime || event.end.date, // Handle both date and dateTime formats
+            joinLink: event.hangoutLink || 'No link available', // Fallback message if no link is available
         }));
-        console.error('Error fetching meetings:', error);
+
         res.status(200).json(events);
     } catch (error) {
         console.error('Error fetching meetings:', error);

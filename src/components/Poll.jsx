@@ -63,13 +63,13 @@ const Poll = ({ onClose }) => {
                     ))}
                 </div>
                 <div className="absolute bottom-2 right-2 w-24 h-24">
-                    <iframe 
-                        src="https://giphy.com/embed/UWWF08t1MEvrOpWqWL" 
-                        width="100%" 
-                        height="100%" 
-                        style={{ position: 'absolute' }} 
-                        frameBorder="0" 
-                        className="giphy-embed" 
+                    <iframe
+                        src="https://giphy.com/embed/UWWF08t1MEvrOpWqWL"
+                        width="100%"
+                        height="100%"
+                        style={{ position: 'absolute' }}
+                        frameBorder="0"
+                        className="giphy-embed"
                         allowFullScreen
                     ></iframe>
                 </div>

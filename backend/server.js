@@ -19,6 +19,11 @@ const io = new Server(server, {
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use(cors()); // Middleware to enable CORS
 
+// Register routes
+app.use('/calendar', calendarRoutes);
+app.use('/issues', issueRoutes);
+app.use('/polls', pollRoutes);
+
 // Define pollData globally
 let pollData = {
   question: 'What is your favorite programming language?',
@@ -34,26 +39,43 @@ let announcements = []; // Store announcements in memory (replace with DB in pro
 
 // Route for posting announcements
 app.post('/announce', (req, res) => {
-    const { text } = req.body; // Destructure text from request body
+    const { text } = req.body;
     
     if (!text) {
-        return res.status(400).json({ error: 'Text is required' }); // Send error response if text is missing
+        return res.status(400).json({ error: 'Text is required' });
     }
 
     const announcement = {
-        id: Date.now().toString(), // Generate a unique ID based on timestamp
+        id: Date.now().toString(),
         text,
         timestamp: new Date()
     };
     announcements.push(announcement);
     io.emit('announcement', announcement); // Send the new announcement to all connected clients
-    res.status(201).json(announcement); // Send the created announcement in response
+    res.status(201).json(announcement);
+});
+
+// Route for updating poll data
+app.post('/polls/update', (req, res) => {
+  const { question, options } = req.body;
+
+  if (!question || !Array.isArray(options) || options.length === 0) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
+
+  pollData = {
+    question,
+    options: options.map(option => ({ option, votes: 0 })) // Reset votes on update
+  };
+
+  io.emit('pollData', pollData); // Notify all clients about the updated poll
+  res.status(200).json(pollData);
 });
 
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log('a user connected');
-  
+
   // Emit initial poll data to new connections
   socket.emit('pollData', pollData);
 

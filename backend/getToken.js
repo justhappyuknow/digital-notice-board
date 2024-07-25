@@ -2,26 +2,27 @@ const { google } = require('googleapis');
 const path = require('path');
 const fs = require('fs');
 
-// Load client secrets from a local file
-const credentialsPath = path.join(__dirname, 'credentials/announcements.json');
-const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf-8'));
+// Load OAuth 2.0 credentials for each service
+const calendarCredentialsPath = path.join(__dirname, 'credentials/calendar.json');
+const sheetsCredentialsPath = path.join(__dirname, 'credentials/sheets.json');
 
-if (!credentials || !credentials.web) {
-  console.error('Credentials are not loaded correctly.');
-  process.exit(1);
-}
+// Load credentials from files
+const calendarCredentials = JSON.parse(fs.readFileSync(calendarCredentialsPath, 'utf-8'));
+const sheetsCredentials = JSON.parse(fs.readFileSync(sheetsCredentialsPath, 'utf-8'));
 
-const { client_secret, client_id, redirect_uris } = credentials.web;
+// Extract OAuth 2.0 credentials for Calendar and Sheets
+const { client_secret: calendarClientSecret, client_id: calendarClientId, redirect_uris: calendarRedirectUris } = calendarCredentials.web;
+const { client_secret: sheetsClientSecret, client_id: sheetsClientId, redirect_uris: sheetsRedirectUris } = sheetsCredentials;
 
-if (!redirect_uris || redirect_uris.length === 0) {
-  console.error('Redirect URIs are not defined in the credentials.');
-  process.exit(1);
-}
+// Configure OAuth2 client with Calendar credentials
+const oAuth2Client = new google.auth.OAuth2(calendarClientId, calendarClientSecret, calendarRedirectUris[0]);
 
-// Configure OAuth2 client
-const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+// Define scopes for Calendar, Sheets, and Meet
+const SCOPES = [
+  'https://www.googleapis.com/auth/calendar',   // Calendar API
+  'https://www.googleapis.com/auth/spreadsheets' // Sheets API
+  // Google Meet scopes are included within Calendar API
+];
 
 // Generate an authentication URL
 const authUrl = oAuth2Client.generateAuthUrl({
@@ -32,8 +33,7 @@ const authUrl = oAuth2Client.generateAuthUrl({
 console.log('Authorize this app by visiting this url:', authUrl);
 
 // After visiting the URL and granting access, you will receive an authorization code
-// Replace `YOUR_NEW_AUTH_CODE` with the code you received
-const code = '4/0AcvDMrCUE9HiMx16drSdQVvp1pWWKCWRFvtOtZG8fQmf7uy6SC8SFxqpw7QHjojsIWJrzA';  // <-- Replace this line
+const code = '4/0AcvDMrASVJHppsEy8jayYem8Zyy8zSqMQAjwVH302E_KkxlBwbVB0OpI3plWR9L7fdH2oQ'; // <-- Replace this line with the authorization code
 
 async function getAccessToken() {
   try {
@@ -44,7 +44,7 @@ async function getAccessToken() {
     console.log('Refresh Token:', tokens.refresh_token);
 
     // Save tokens to a file
-    const tokenPath = path.join(__dirname, 'credentials/token2.json');
+    const tokenPath = path.join(__dirname, 'credentials/tokens.json');
     fs.writeFileSync(tokenPath, JSON.stringify(tokens));
     console.log(`Tokens saved to ${tokenPath}`);
   } catch (error) {
