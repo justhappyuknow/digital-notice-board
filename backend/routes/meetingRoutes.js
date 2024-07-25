@@ -1,6 +1,5 @@
-// routes/meetingsRoutes.js
 const express = require('express');
-const { listMeetings } = require('../controllers/meetingsController');
+const { listMeetings } = require('../controllers/meetingController');
 
 const router = express.Router();
 

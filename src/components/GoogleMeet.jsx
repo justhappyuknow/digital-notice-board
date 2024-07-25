@@ -8,14 +8,12 @@ const GoogleMeet = ({ onClose }) => {
     useEffect(() => {
         const fetchMeetings = async () => {
             try {
-                const response = await fetch('http://localhost:4000/calendar/events'); // Ensure this matches your server route
-                const data = await response.json();
-                if (Array.isArray(data)) {
-                    setMeetings(data);
-                } else {
-                    console.error('Expected an array, but got:', data);
-                    setMeetings([]); // Handle as needed
+                const response = await fetch('http://localhost:4000/calendar/meetings');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+                const data = await response.json();
+                setMeetings(data);
             } catch (error) {
                 console.error('Error fetching meetings:', error);
                 setMeetings([]); // Handle as needed
@@ -39,17 +37,19 @@ const GoogleMeet = ({ onClose }) => {
                 <h2 className="text-xl font-semibold mb-4 text-white">Google Meet Schedule</h2>
                 <ul>
                     {meetings.length > 0 ? (
-                        meetings.map((meeting, index) => (
-                            <li key={index} className="p-4 border border-gray-200 rounded-lg shadow-sm mb-4 bg-white bg-opacity-60">
+                        meetings.map((meeting) => (
+                            <li key={meeting.id} className="p-4 border border-gray-200 rounded-lg shadow-sm mb-4 bg-white bg-opacity-60">
                                 <h3 className="text-lg font-semibold">{meeting.summary}</h3>
                                 <p className="text-gray-700 mt-2">
-                                    {meeting.start.dateTime ? new Date(meeting.start.dateTime).toLocaleString() : new Date(meeting.start.date).toLocaleDateString()} -
-                                    {meeting.end.dateTime ? new Date(meeting.end.dateTime).toLocaleString() : new Date(meeting.end.date).toLocaleDateString()}
+                                    {meeting.start ? new Date(meeting.start).toLocaleString() : 'No start time'} -
+                                    {meeting.end ? new Date(meeting.end).toLocaleString() : 'No end time'}
                                 </p>
-                                {meeting.hangoutLink && (
-                                    <a href={meeting.hangoutLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                                {meeting.joinLink && meeting.joinLink !== 'No link available' ? (
+                                    <a href={meeting.joinLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
                                         Join Meeting
                                     </a>
+                                ) : (
+                                    <p className="text-gray-500">No link available</p>
                                 )}
                             </li>
                         ))

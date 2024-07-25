@@ -17,7 +17,7 @@ const IssueTracker = ({ onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:4000/api/issues/submit', {
+            const response = await axios.post('http://localhost:4000/issues/submit', {
                 name,
                 email,
                 issue
@@ -32,7 +32,7 @@ const IssueTracker = ({ onClose }) => {
         <Draggable position={position} onDrag={handleDrag} handle=".handle">
             <div className="relative bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg border border-opacity-30 border-gray-200 p-6 rounded-lg shadow-md w-full max-w-2xl mx-auto">
                 <div className="handle cursor-move absolute top-0 left-0 right-0 h-8 bg-gray-200 rounded-t-lg"></div>
-                <button 
+                <button
                     onClick={onClose}
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"
                 >

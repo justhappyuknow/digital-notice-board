@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 import GoogleSlides from '../components/GoogleSlides';
 import PomodoroTimer from '../components/PomodoroTimer';
 import GoogleSpreadsheet from '../components/GoogleSpreadsheet';
@@ -15,9 +16,11 @@ import GoogleMeet from '../components/GoogleMeet';
 import NotionWidget from '../components/NotionWidget';
 import ChatGPTWidget from '../components/ChatGPTWidget';
 import Typewriter from '../components/Typewriter';
-import ToastNotification from '../components/AnnouncementWidget'; // Import ToastNotification
-import io from 'socket.io-client';
 import AnnouncementWidget from '../components/AnnouncementWidget';
+import WidgetAdder from '../components/WidgetAdder';
+import AdminLogin from '../components/admin/AdminLogin'; // Ensure correct import
+import Admin from '../components/admin/Admin'; // Ensure correct import
+import io from 'socket.io-client';
 
 const socket = io('http://localhost:4000');
 
@@ -40,9 +43,11 @@ const Home = () => {
             googleMeet: true,
             notionWidget: true,
             chatGPTWidget: true,
-            announcementWidget: true // Add the announcement widget here
+            announcementWidget: true
         };
     });
+
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('visibleWidgets', JSON.stringify(visibleWidgets));
@@ -50,8 +55,7 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('announcement', (announcement) => {
-            // Show toast notification
-            toast(announcement.text);
+            console.log('New announcement:', announcement.text);
         });
 
         return () => {
@@ -63,30 +67,49 @@ const Home = () => {
         setVisibleWidgets(prev => ({ ...prev, [widgetName]: false }));
     };
 
+    const handleAdd = (widgetName) => {
+        setVisibleWidgets(prev => ({ ...prev, [widgetName]: true }));
+    };
+
     return (
-        <div>
-            <h1 className="text-5xl font-bold mb-6 text-white text-center">
-                <Typewriter text="Digital Notice Board" delay={80} />
-            </h1>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-white">
-                {visibleWidgets.googleSlides && <GoogleSlides onClose={() => handleClose('googleSlides')} />}
-                {visibleWidgets.pomodoroTimer && <PomodoroTimer onClose={() => handleClose('pomodoroTimer')} />}
-                {visibleWidgets.googleSpreadsheet && <GoogleSpreadsheet onClose={() => handleClose('googleSpreadsheet')} />}
-                {visibleWidgets.googleForm && <GoogleForm onClose={() => handleClose('googleForm')} />}
-                {visibleWidgets.poll && <Poll onClose={() => handleClose('poll')} />}
-                {visibleWidgets.bookQuote && <BookQuoteWidget onClose={() => handleClose('bookQuote')} />}
-                {visibleWidgets.issueTracker && <IssueTracker onClose={() => handleClose('issueTracker')} />}
-                {visibleWidgets.dgc && <Dgc onClose={() => handleClose('dgc')} />}
-                {visibleWidgets.stepsTracker && <StepsTracker onClose={() => handleClose('stepsTracker')} />}
-                {visibleWidgets.opportunityBoard && <OpportunityBoard onClose={() => handleClose('opportunityBoard')} />}
-                {visibleWidgets.tilCorner && <TILCorner onClose={() => handleClose('tilCorner')} />}
-                {visibleWidgets.googleCalendar && <GoogleCalendar onClose={() => handleClose('googleCalendar')} />}
-                {visibleWidgets.googleMeet && <GoogleMeet onClose={() => handleClose('googleMeet')} />}
-                {visibleWidgets.notionWidget && <NotionWidget onClose={() => handleClose('notionWidget')} />}
-                {visibleWidgets.chatGPTWidget && <ChatGPTWidget onClose={() => handleClose('chatGPTWidget')} />}
-                {visibleWidgets.announcementWidget && <AnnouncementWidget onClose={() => handleClose('announcementWidget')} />}
+        <Router>
+            <div>
+                <nav className="flex justify-between p-4 bg-gray-900 text-white">
+                    <Link to="/" className="text-2xl">Home</Link>
+                    <Link to="/admin" className="text-2xl">Admin</Link>
+                </nav>
+                <Routes>
+                    <Route path="/" element={
+                        <div>
+                            <h1 className="text-5xl font-bold mb-6 text-white text-center">
+                                <Typewriter text="Digital Notice Board" delay={80} />
+                            </h1>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-white">
+                                {visibleWidgets.googleSlides && <GoogleSlides onClose={() => handleClose('googleSlides')} />}
+                                {visibleWidgets.pomodoroTimer && <PomodoroTimer onClose={() => handleClose('pomodoroTimer')} />}
+                                {visibleWidgets.googleSpreadsheet && <GoogleSpreadsheet onClose={() => handleClose('googleSpreadsheet')} />}
+                                {visibleWidgets.googleForm && <GoogleForm onClose={() => handleClose('googleForm')} />}
+                                {visibleWidgets.poll && <Poll onClose={() => handleClose('poll')} />}
+                                {visibleWidgets.bookQuote && <BookQuoteWidget onClose={() => handleClose('bookQuote')} />}
+                                {visibleWidgets.issueTracker && <IssueTracker onClose={() => handleClose('issueTracker')} />}
+                                {visibleWidgets.dgc && <Dgc onClose={() => handleClose('dgc')} />}
+                                {visibleWidgets.stepsTracker && <StepsTracker onClose={() => handleClose('stepsTracker')} />}
+                                {visibleWidgets.opportunityBoard && <OpportunityBoard onClose={() => handleClose('opportunityBoard')} />}
+                                {visibleWidgets.tilCorner && <TILCorner onClose={() => handleClose('tilCorner')} />}
+                                {visibleWidgets.googleCalendar && <GoogleCalendar onClose={() => handleClose('googleCalendar')} />}
+                                {visibleWidgets.googleMeet && <GoogleMeet onClose={() => handleClose('googleMeet')} />}
+                                {visibleWidgets.notionWidget && <NotionWidget onClose={() => handleClose('notionWidget')} />}
+                                {visibleWidgets.chatGPTWidget && <ChatGPTWidget onClose={() => handleClose('chatGPTWidget')} />}
+                                {visibleWidgets.announcementWidget && <AnnouncementWidget onClose={() => handleClose('announcementWidget')} />}
+                            </div>
+                            <WidgetAdder visibleWidgets={visibleWidgets} onAdd={handleAdd} />
+                        </div>
+                    } />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="/admin-login" element={<AdminLogin />} />
+                </Routes>
             </div>
-        </div>
+        </Router>
     );
 };
 
