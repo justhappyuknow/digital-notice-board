@@ -15,9 +15,9 @@ import GoogleMeet from '../components/GoogleMeet';
 import NotionWidget from '../components/NotionWidget';
 import ChatGPTWidget from '../components/ChatGPTWidget';
 import Typewriter from '../components/Typewriter';
-import ToastNotification from '../components/AnnouncementWidget'; // Import ToastNotification
-import io from 'socket.io-client';
 import AnnouncementWidget from '../components/AnnouncementWidget';
+import WidgetAdder from '../components/WidgetAdder'; // Import WidgetAdder
+import io from 'socket.io-client';
 
 const socket = io('http://localhost:4000');
 
@@ -40,9 +40,11 @@ const Home = () => {
             googleMeet: true,
             notionWidget: true,
             chatGPTWidget: true,
-            announcementWidget: true // Add the announcement widget here
+            announcementWidget: true
         };
     });
+
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         localStorage.setItem('visibleWidgets', JSON.stringify(visibleWidgets));
@@ -50,8 +52,7 @@ const Home = () => {
 
     useEffect(() => {
         socket.on('announcement', (announcement) => {
-            // Show toast notification
-            toast(announcement.text);
+            console.log('New announcement:', announcement.text);
         });
 
         return () => {
@@ -61,6 +62,10 @@ const Home = () => {
 
     const handleClose = (widgetName) => {
         setVisibleWidgets(prev => ({ ...prev, [widgetName]: false }));
+    };
+
+    const handleAdd = (widgetName) => {
+        setVisibleWidgets(prev => ({ ...prev, [widgetName]: true }));
     };
 
     return (
@@ -86,6 +91,7 @@ const Home = () => {
                 {visibleWidgets.chatGPTWidget && <ChatGPTWidget onClose={() => handleClose('chatGPTWidget')} />}
                 {visibleWidgets.announcementWidget && <AnnouncementWidget onClose={() => handleClose('announcementWidget')} />}
             </div>
+            <WidgetAdder visibleWidgets={visibleWidgets} onAdd={handleAdd} />
         </div>
     );
 };
