@@ -3,16 +3,17 @@ import io from 'socket.io-client';
 import Draggable from 'react-draggable';
 import { FaTimes } from 'react-icons/fa';
 
-const socket = io('http://localhost:4000');
 
 const Poll = ({ onClose }) => {
     const [poll, setPoll] = useState(null);
     const [selectedOption, setSelectedOption] = useState(null);
+    const socket = io('http://localhost:4000');
 
     useEffect(() => {
         socket.on('pollData', (data) => {
             setPoll(data);
         });
+
 
         return () => {
             socket.off('pollData');
