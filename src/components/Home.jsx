@@ -18,8 +18,9 @@ import ChatGPTWidget from '../components/ChatGPTWidget';
 import Typewriter from '../components/Typewriter';
 import AnnouncementWidget from '../components/AnnouncementWidget';
 import WidgetAdder from '../components/WidgetAdder';
-import AdminLogin from '../components/admin/AdminLogin'; // Ensure correct import
-import Admin from '../components/admin/Admin'; // Ensure correct import
+import ScribbleNotesWidget from '../components/ScribbleNotesWidget';
+import AdminLogin from '../components/admin/AdminLogin';
+import Admin from '../components/admin/Admin';
 import io from 'socket.io-client';
 
 const socket = io('http://localhost:4000');
@@ -43,7 +44,8 @@ const Home = () => {
             googleMeet: true,
             notionWidget: true,
             chatGPTWidget: true,
-            announcementWidget: true
+            announcementWidget: true,
+            scribbleNotesWidget: true // Include Scribble Notes widget
         };
     });
 
@@ -74,15 +76,17 @@ const Home = () => {
     return (
         <Router>
             <div>
-                <nav className="flex justify-between p-4 bg-gray-900 text-white">
-                    <Link to="/" className="text-2xl">Home</Link>
-                    <Link to="/admin-login" className="text-2xl">Admin</Link>
+                <nav className="flex justify-between items-center p-6 bg-gray-900 text-white shadow-lg">
+                    <div className="flex items-center space-x-8">
+                        <Link to="/" className="text-2xl font-bold hover:text-gray-300 transition-colors duration-300">Home</Link>
+                        <Link to="/admin" className="text-2xl font-bold hover:text-gray-300 transition-colors duration-300">Admin</Link>
+                    </div>
                 </nav>
                 <Routes>
                     <Route path="/" element={
                         <div>
                             <h1 className="text-5xl font-bold mb-6 text-white text-center">
-                                <Typewriter text="Digital Notice Board" delay={80} />
+                                <Typewriter text="Apun ka Notice Board" delay={80} />
                             </h1>
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-white">
                                 {visibleWidgets.googleSlides && <GoogleSlides onClose={() => handleClose('googleSlides')} />}
@@ -101,6 +105,7 @@ const Home = () => {
                                 {visibleWidgets.notionWidget && <NotionWidget onClose={() => handleClose('notionWidget')} />}
                                 {visibleWidgets.chatGPTWidget && <ChatGPTWidget onClose={() => handleClose('chatGPTWidget')} />}
                                 {visibleWidgets.announcementWidget && <AnnouncementWidget onClose={() => handleClose('announcementWidget')} />}
+                                {visibleWidgets.scribbleNotesWidget && <ScribbleNotesWidget onClose={() => handleClose('scribbleNotesWidget')} />} {/* Add Scribble Notes widget */}
                             </div>
                             <WidgetAdder visibleWidgets={visibleWidgets} onAdd={handleAdd} />
                         </div>

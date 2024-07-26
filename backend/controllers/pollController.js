@@ -1,11 +1,4 @@
 let pollData = {
-  question: 'What is your favorite programming language?',
-  options: [
-      { option: 'JavaScript', votes: 0 },
-      { option: 'Python', votes: 0 },
-      { option: 'Java', votes: 0 },
-      { option: 'C++', votes: 0 }
-  ]
 };
 
 exports.getPollData = (req, res) => {

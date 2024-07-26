@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { FaTimes } from 'react-icons/fa';
 import io from 'socket.io-client';
+import Draggable from 'react-draggable';
 
 const socket = io('http://localhost:4000'); // Replace with your server URL
 
-const AnnouncementWidget = () => {
+const AnnouncementWidget = ({ onClose }) => {
     const [announcements, setAnnouncements] = useState([]);
 
     useEffect(() => {
@@ -31,23 +33,28 @@ const AnnouncementWidget = () => {
     };
 
     return (
-        <div className="bg-gray-800 p-4 rounded-lg">
-            <h2 className="text-xl font-bold mb-2">Announcements</h2>
-            <div>
-                {announcements.map((ann) => (
-                    <div key={ann.id} className="mb-2 p-2 bg-gray-700 rounded relative">
-                        <button
-                            onClick={() => handleClose(ann.id)}
-                            className="absolute top-1 right-1 text-red-500"
-                        >
-                            Close
-                        </button>
-                        <p>{ann.text}</p>
-                        <span className="text-gray-400 text-sm">{new Date(ann.timestamp).toLocaleString()}</span>
-                    </div>
-                ))}
+        <Draggable>
+            <div className="relative bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg border border-opacity-10 border-gray-200 p-4 rounded-lg shadow-lg w-full max-w-md mx-auto">
+                <button onClick={onClose} className="absolute top-4 right-4">
+                    <FaTimes className="text-white" />
+                </button>
+                <h2 className="text-xl font-bold mb-2 text-white">Announcements</h2>
+                <div>
+                    {announcements.map((ann) => (
+                        <div key={ann.id} className="mb-2 p-2 bg-gray-700 bg-opacity-50 rounded relative">
+                            <button
+                                onClick={() => handleClose(ann.id)}
+                                className="absolute top-1 right-1 text-red-500"
+                            >
+                                <FaTimes />
+                            </button>
+                            <p className="text-white">{ann.text}</p>
+                            <span className="text-gray-400 text-sm">{new Date(ann.timestamp).toLocaleString()}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+        </Draggable>
     );
 };
 
